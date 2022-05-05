@@ -113,7 +113,7 @@ nvim_tree.setup({
   },
 })
 
-vim.keymap.set('n', '<space>s', function()
+vim.keymap.set('n', '<C-n>', function()
   return require('nvim-tree').toggle(false, true)
 end,
 { noremap = true, silent = true, desc = "toggle nvim-tree"})

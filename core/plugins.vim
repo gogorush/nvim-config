@@ -84,26 +84,31 @@ let g:Lf_ShortcutB = ''
 
 " set up working directory for git repository
 let g:Lf_WorkingDirectoryMode = 'a'
+" Find files using Telescope command-line sugar.
+"nnoremap <leader>ff <cmd>Telescope find_files<cr>
+"nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+"nnoremap <leader>fb <cmd>Telescope buffers<cr>
+"nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-" Search files in popup window
-nnoremap <silent> <leader>ff :<C-U>Leaderf file --popup<CR>
+"" Search files in popup window
+"nnoremap <silent> <leader>ff :<C-U>Leaderf file --popup<CR>
 
-" Grep project files in popup window
-nnoremap <silent> <leader>fg :<C-U>Leaderf rg --no-messages --popup<CR>
+"" Grep project files in popup window
+"nnoremap <silent> <leader>fg :<C-U>Leaderf rg --no-messages --popup<CR>
 
-" Search vim help files
-nnoremap <silent> <leader>fh :<C-U>Leaderf help --popup<CR>
+"" Search vim help files
+"nnoremap <silent> <leader>fh :<C-U>Leaderf help --popup<CR>
 
-" Search tags in current buffer
-nnoremap <silent> <leader>ft :<C-U>Leaderf bufTag --popup<CR>
+"" Search tags in current buffer
+"nnoremap <silent> <leader>ft :<C-U>Leaderf bufTag --popup<CR>
 
-" Switch buffers
-nnoremap <silent> <leader>fb :<C-U>Leaderf buffer --popup<CR>
+"" Switch buffers
+"nnoremap <silent> <leader>fb :<C-U>Ldefaulteaderf buffer --popup<CR>
 
-" Search recent files
-nnoremap <silent> <leader>fr :<C-U>Leaderf mru --popup --absolute-path<CR>
+"" Search recent files
+"nnoremap <silent> <leader>fr :<C-U>Leaderf mru --popup --absolute-path<CR>
 
-let g:Lf_PopupColorscheme = 'gruvbox_material'
+let g:Lf_PopupColorscheme = 'gruvbox'
 
 " Change keybinding in LeaderF prompt mode, use ctrl-n and ctrl-p to navigate
 " items.
@@ -167,6 +172,7 @@ let g:better_escape_interval = 200
 
 """"""""""""""""""""""""""""vim-xkbswitch settings"""""""""""""""""""""""""
 let g:XkbSwitchEnabled = 1
+let g:XkbSwitchLib = '/usr/local/bin/libxkbswitch.dylib'
 
 """""""""""""""""""""""""""""" neoformat settings """""""""""""""""""""""
 let g:neoformat_enabled_python = ['black', 'yapf']

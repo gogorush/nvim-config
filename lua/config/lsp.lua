@@ -67,6 +67,218 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local lspconfig = require("lspconfig")
+util = require "lspconfig/util"
+
+local on_attach = function(client)
+    require'completion'.on_attach(client)
+end
+
+-- rust-tools
+local opts = {
+	tools = { -- rust-tools options
+		-- automatically set inlay hints (type hints)
+		-- There is an issue due to which the hints are not applied on the first
+		-- opened file. For now, write to the file to trigger a reapplication of
+		-- the hints or just run :RustSetInlayHints.
+		-- default: true
+		autoSetHints = true,
+
+		-- whether to show hover actions inside the hover window
+		-- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
+		-- default: true
+		hover_with_actions = true,
+
+		-- how to execute terminal commands
+		-- options right now: termopen / quickfix
+		executor = require("rust-tools/executors").termopen,
+
+		-- callback to execute once rust-analyzer is done initializing the workspace
+		-- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
+		on_initialized = nil,
+
+		-- These apply to the default RustSetInlayHints command
+		inlay_hints = {
+
+			-- Only show inlay hints for the current line
+			only_current_line = false,
+
+			-- Event which triggers a refersh of the inlay hints.
+			-- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
+			-- not that this may cause higher CPU usage.
+			-- This option is only respected when only_current_line and
+			-- autoSetHints both are true.
+			only_current_line_autocmd = "CursorHold",
+
+			-- whether to show parameter hints with the inlay hints or not
+			-- default: true
+			show_parameter_hints = true,
+
+			-- whether to show variable name before type hints with the inlay hints or not
+			-- default: false
+			show_variable_name = false,
+
+			-- prefix for parameter hints
+			-- default: "<-"
+			parameter_hints_prefix = "<- ",
+
+			-- prefix for all the other hints (type, chaining)
+			-- default: "=>"
+			other_hints_prefix = "=> ",
+
+			-- whether to align to the lenght of the longest line in the file
+			max_len_align = false,
+
+			-- padding from the left if max_len_align is true
+			max_len_align_padding = 1,
+
+			-- whether to align to the extreme right or not
+			right_align = false,
+
+			-- padding from the right if right_align is true
+			right_align_padding = 7,
+
+			-- The color of the hints
+			highlight = "Comment",
+		},
+
+
+		-- options same as lsp hover / vim.lsp.util.open_floating_preview()
+		hover_actions = {
+			-- the border that is used for the hover window
+			-- see vim.api.nvim_open_win()
+      border = {
+      {"🭽", "FloatBorder"},
+      {"▔", "FloatBorder"},
+      {"🭾", "FloatBorder"},
+      {"▕", "FloatBorder"},
+      {"🭿", "FloatBorder"},
+      {"▁", "FloatBorder"},
+      {"🭼", "FloatBorder"},
+      {"▏", "FloatBorder"},
+      },
+			-- whether the hover action window gets automatically focused
+			-- default: false
+			auto_focus = false,
+		},
+
+		-- settings for showing the crate graph based on graphviz and the dot
+		-- command
+		crate_graph = {
+			-- Backend used for displaying the graph
+			-- see: https://graphviz.org/docs/outputs/
+			-- default: x11
+			backend = "x11",
+			-- where to store the output, nil for no output stored (relative
+			-- path from pwd)
+			-- default: nil
+			output = nil,
+			-- true for all crates.io and external crates, false only the local
+			-- crates
+			-- default: true
+			full = true,
+
+			-- List of backends found on: https://graphviz.org/docs/outputs/
+			-- Is used for input validation and autocompletion
+			-- Last updated: 2021-08-26
+			enabled_graphviz_backends = {
+				"bmp",
+				"cgimage",
+				"canon",
+				"dot",
+				"gv",
+				"xdot",
+				"xdot1.2",
+				"xdot1.4",
+				"eps",
+				"exr",
+				"fig",
+				"gd",
+				"gd2",
+				"gif",
+				"gtk",
+				"ico",
+				"cmap",
+				"ismap",
+				"imap",
+				"cmapx",
+				"imap_np",
+				"cmapx_np",
+				"jpg",
+				"jpeg",
+				"jpe",
+				"jp2",
+				"json",
+				"json0",
+				"dot_json",
+				"xdot_json",
+				"pdf",
+				"pic",
+				"pct",
+				"pict",
+				"plain",
+				"plain-ext",
+				"png",
+				"pov",
+				"ps",
+				"ps2",
+				"psd",
+				"sgi",
+				"svg",
+				"svgz",
+				"tga",
+				"tiff",
+				"tif",
+				"tk",
+				"vml",
+				"vmlz",
+				"wbmp",
+				"webp",
+				"xlib",
+				"x11",
+			},
+		},
+	},
+
+	-- all the opts to send to nvim-lspconfig
+	-- these override the defaults set by rust-tools.nvim
+	-- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
+	server = {
+		-- standalone file support
+		-- setting it to false may improve startup time
+		standalone = true,
+	}, -- rust-analyer options
+
+	-- debugging stuff
+	dap = {
+		adapter = {
+			type = "executable",
+			command = "lldb-vscode",
+			name = "rt_lldb",
+		},
+	},
+}
+require('rust-tools').setup(opts)
+
+ --gopls setting
+if utils.executable('gopls') then
+  lspconfig.gopls.setup({
+    on_attach = custom_attach,
+    capabilities = capabilities,
+    cmd = {"gopls", "serve"},
+    filetypes = {"go", "gomod"},
+    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        staticcheck = true,
+      },
+    },
+  })
+else
+  vim.notify("gopls not found!", 'warn', {title = 'Nvim-config'})
+end
 
 if utils.executable('pylsp') then
   lspconfig.pylsp.setup({
@@ -91,6 +303,7 @@ if utils.executable('pylsp') then
 else
   vim.notify("pylsp not found!", 'warn', {title = 'Nvim-config'})
 end
+
 
 -- if utils.executable('pyright') then
 --   lspconfig.pyright.setup{
@@ -135,42 +348,51 @@ if utils.executable('bash-language-server') then
   })
 end
 
-local sumneko_binary_path = vim.fn.exepath("lua-language-server")
-if vim.g.is_mac or vim.g.is_linux and sumneko_binary_path ~= "" then
-  local sumneko_root_path = vim.fn.fnamemodify(sumneko_binary_path, ":h:h:h")
+local luadev = require("lua-dev").setup({
+  -- add any options here, or leave empty to use the default settings
+  -- lspconfig = {
+  --   cmd = {"lua-language-server"}
+  -- },
+})
+lspconfig.sumneko_lua.setup(luadev)
 
-  local runtime_path = vim.split(package.path, ";")
-  table.insert(runtime_path, "lua/?.lua")
-  table.insert(runtime_path, "lua/?/init.lua")
 
-  lspconfig.sumneko_lua.setup({
-    on_attach = custom_attach,
-    cmd = { sumneko_binary_path, "-E", sumneko_root_path .. "/main.lua" },
-    settings = {
-      Lua = {
-        runtime = {
-          -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-          version = "LuaJIT",
-          -- Setup your lua path
-          path = runtime_path,
-        },
-        diagnostics = {
-          -- Get the language server to recognize the `vim` global
-          globals = { "vim" },
-        },
-        workspace = {
-          -- Make the server aware of Neovim runtime files
-          library = api.nvim_get_runtime_file("", true),
-        },
-        -- Do not send telemetry data containing a randomized but unique identifier
-        telemetry = {
-          enable = false,
-        },
-      },
-    },
-    capabilities = capabilities,
-  })
-end
+--[[local sumneko_binary_path = vim.fn.exepath("lua-language-server")]]
+--[[if vim.g.is_mac or vim.g.is_linux and sumneko_binary_path ~= "" then]]
+  --[[local sumneko_root_path = vim.fn.fnamemodify(sumneko_binary_path, ":h:h:h")]]
+
+  --[[local runtime_path = vim.split(package.path, ";")]]
+  --[[table.insert(runtime_path, "lua/?.lua")]]
+  --[[table.insert(runtime_path, "lua/?/init.lua")]]
+
+  --[[lsumneko_luasumneko_luaspconfig.sumneko_lua.setup({]]
+    --[[on_attach = custom_attach,]]
+    --[[cmd = { sumneko_binary_path, "-E", sumneko_root_path .. "/main.lua" },]]
+    --[[settings = {]]
+      --[[Lua = {]]
+        --[[runtime = {]]
+          --[[-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)]]
+          --[[version = "LuaJIT",]]
+          --[[-- Setup your lua path]]
+          --[[path = runtime_path,]]
+        --[[},]]
+        --[[diagnostics = {]]
+          --[[-- Get the language server to recognize the `vim` global]]
+          --[[globals = { "vim" },]]
+        --[[},]]
+        --[[workspace = {]]
+          --[[-- Make the server aware of Neovim runtime files]]
+          --[[library = api.nvim_get_runtime_file("", true),]]
+        --[[},]]
+        --[[-- Do not send telemetry data containing a randomized but unique identifier]]
+        --[[telemetry = {]]
+          --[[enable = false,]]
+        --[[},]]
+      --[[},]]
+    --[[},]]
+    --[[capabilities = capabilities,]]
+  --[[})]]
+--[[end]]
 
 -- Change diagnostic signs.
 vim.fn.sign_define("DiagnosticSignError", { text = "✗", texthl = "DiagnosticSignError" })

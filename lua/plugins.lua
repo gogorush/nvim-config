@@ -43,6 +43,18 @@ require("packer").startup({
 
     -- nvim-lsp configuration (it relies on cmp-nvim-lsp, so it should be loaded after cmp-nvim-lsp).
     use({ "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require('config.lsp')]] })
+    use {"williamboman/nvim-lsp-installer"}
+    use { 'simrat39/rust-tools.nvim' }
+    use { 'folke/lua-dev.nvim' }
+
+    -- use {"ray-x/go.nvim"}
+    -- use "jose-elias-alvarez/null-ls.nvim" -- for formatters and linters
+    -- use "RishabhRD/popfix"
+    -- use "RishabhRD/nvim-lsputils"
+    use "kosayoda/nvim-lightbulb" -- code action
+    use "ray-x/lsp_signature.nvim" -- show function signature when typing
+    use {"neoclide/coc.nvim", branch = "release"}
+
 
     if vim.g.is_mac then
       use({ "nvim-treesitter/nvim-treesitter", event = 'BufEnter', run = ":TSUpdate", config = [[require('config.treesitter')]] })
@@ -98,6 +110,14 @@ require("packer").startup({
     }
     -- search emoji and other symbols
     use {'nvim-telescope/telescope-symbols.nvim', after = 'telescope.nvim'}
+    use { 'nvim-telescope/telescope-project.nvim', after = 'telescope.nvim' }
+    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+    use "nvim-telescope/telescope-ui-select.nvim"
+    use "nvim-telescope/telescope-live-grep-raw.nvim"
+    use "MattesGroeger/vim-bookmarks"
+    use "tom-anders/telescope-vim-bookmarks.nvim"
+    use "nvim-telescope/telescope-dap.nvim"
+
 
     -- Another similar plugin is command-t
     -- use 'wincent/command-t'
@@ -119,6 +139,10 @@ require("packer").startup({
     use({"sainnhe/everforest", opt = true})
     use({"EdenEast/nightfox.nvim", opt = true})
     use({"rebelot/kanagawa.nvim", opt = true})
+    use({"Mofiqul/vscode.nvim", opt = true})
+    use {"ellisonleao/gruvbox.nvim", opt = true }
+    use { 'lalitmee/cobalt2.nvim', requires = 'tjdevries/colorbuddy.nvim' }
+
 
     -- Show git change (change, delete, add) signs in vim sign column
     use({"mhinz/vim-signify", event = 'BufEnter'})
@@ -323,6 +347,9 @@ require("packer").startup({
         setup = [[vim.cmd('packadd firenvim')]],
       })
     end
+
+    use{'mfussenegger/nvim-dap'}
+
 
     -- Debugger plugin
     if vim.g.is_win or vim.g.is_linux then
