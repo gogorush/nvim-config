@@ -386,7 +386,21 @@ require("packer").startup({
     }
 
     -- glow: md file previewer
-    use {"ellisonleao/glow.nvim", branch = 'main'}
+    use { "ellisonleao/glow.nvim", branch = 'main' }
+
+    -- bufjump replace old C-o C-i
+    use {
+      "kwkarlwang/bufjump.nvim",
+      config = function()
+        require("bufjump").setup({
+          forward = "<C-i>",
+          backward = "<C-o>",
+          on_success = function()
+            vim.cmd([[execute "normal! g`\"zz"]])
+          end,
+        })
+      end
+    }
   end,
   config = {
     max_jobs = 16,

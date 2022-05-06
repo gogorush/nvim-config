@@ -29,10 +29,6 @@ endfor
 lua require('colorbuddy').colorscheme('cobalt2')
 highlight! link mkdLineBreak NONE
 
-" bufferline setting
-nnoremap <silent>b[ :BufferLineCycleNext<CR>
-nnoremap <silent>b] :BufferLineCyclePrev<CR>
-
 "set background=dark " or light if you want light mode
 "colorscheme gruvbox
 

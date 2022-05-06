@@ -6,19 +6,20 @@ local utils = require("utils")
 vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
 vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
 vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
+
 local border = {
-      {"🭽", "FloatBorder"},
-      {"▔", "FloatBorder"},
-      {"🭾", "FloatBorder"},
-      {"▕", "FloatBorder"},
-      {"🭿", "FloatBorder"},
-      {"▁", "FloatBorder"},
-      {"🭼", "FloatBorder"},
-      {"▏", "FloatBorder"},
+  { "🭽", "FloatBorder" },
+  { "▔", "FloatBorder" },
+  { "🭾", "FloatBorder" },
+  { "▕", "FloatBorder" },
+  { "🭿", "FloatBorder" },
+  { "▁", "FloatBorder" },
+  { "🭼", "FloatBorder" },
+  { "▏", "FloatBorder" },
 }
 
 -- LSP settings (for overriding per client)
-local handlers =  {
+local handlers = {
 }
 
 local custom_attach = function(client, bufnr)
@@ -36,17 +37,17 @@ local custom_attach = function(client, bufnr)
   vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
   vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
   vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-  vim.keymap.set("n", "<space>q", function() vim.diagnostic.setqflist({open = true}) end, opts)
+  vim.keymap.set("n", "<space>q", function() vim.diagnostic.setqflist({ open = true }) end, opts)
   vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
 
   vim.api.nvim_create_autocmd("CursorHold", {
-    buffer=bufnr,
+    buffer = bufnr,
     callback = function()
       local opts = {
         focusable = false,
         close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
         border = 'rounded',
-        source = 'always',  -- show source in diagnostic popup window
+        source = 'always', -- show source in diagnostic popup window
         prefix = ' '
       }
       vim.diagnostic.open_float(nil, opts)
@@ -77,7 +78,7 @@ local custom_attach = function(client, bufnr)
 
   if vim.g.logging_level == 'debug' then
     local msg = string.format("Language server %s started!", client.name)
-    vim.notify(msg, 'info', {title = 'Nvim-config'})
+    vim.notify(msg, 'info', { title = 'Nvim-config' })
   end
 end
 
@@ -89,9 +90,9 @@ local lspconfig = require("lspconfig")
 util = require "lspconfig/util"
 
 local on_attach = function(client)
-    -- Highlight symbol under cursor
-    if client.resolved_capabilities.document_highlight then
-      vim.cmd [[
+  -- Highlight symbol under cursor
+  if client.resolved_capabilities.document_highlight then
+    vim.cmd [[
         hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
         hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
         hi! LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
@@ -102,31 +103,31 @@ local on_attach = function(client)
           autocmd! CursorMoved <buffer> lua vim.lsp.buf.clear_references()
         augroup END
       ]]
-    end
-    require'completion'.on_attach(client)
+  end
+  require 'completion'.on_attach(client)
 end
 
 lspconfig.rust_analyzer.setup({
   on_attach = custom_attach,
   capabilities = capabilities,
-  filetypes = {'rust'},
-  cmd = {'rust-analyzer'},
+  filetypes = { 'rust' },
+  cmd = { 'rust-analyzer' },
   settings = {
-  	["rust-analyzer"] = {
-  		checkOnSave = {
-  			command = "clippy"
-  			}
-  		}
-  	},
+    ["rust-analyzer"] = {
+      checkOnSave = {
+        command = "clippy"
+      }
+    }
+  },
 })
 
- --gopls setting
+--gopls setting
 if utils.executable('gopls') then
   lspconfig.gopls.setup({
     on_attach = custom_attach,
     capabilities = capabilities,
-    cmd = {"gopls", "serve"},
-    filetypes = {"go", "gomod"},
+    cmd = { "gopls", "serve" },
+    filetypes = { "go", "gomod" },
     root_dir = util.root_pattern("go.work", "go.mod", ".git"),
     settings = {
       gopls = {
@@ -138,7 +139,7 @@ if utils.executable('gopls') then
     },
   })
 else
-  vim.notify("gopls not found!", 'warn', {title = 'Nvim-config'})
+  vim.notify("gopls not found!", 'warn', { title = 'Nvim-config' })
 end
 
 if utils.executable('pylsp') then
@@ -162,7 +163,7 @@ if utils.executable('pylsp') then
     capabilities = capabilities,
   })
 else
-  vim.notify("pylsp not found!", 'warn', {title = 'Nvim-config'})
+  vim.notify("pylsp not found!", 'warn', { title = 'Nvim-config' })
 end
 
 
@@ -185,7 +186,7 @@ if utils.executable('clangd') then
     },
   })
 else
-  vim.notify("clangd not found!", 'warn', {title = 'Nvim-config'})
+  vim.notify("clangd not found!", 'warn', { title = 'Nvim-config' })
 end
 
 -- set up vim-language-server
@@ -198,7 +199,7 @@ if utils.executable('vim-language-server') then
     capabilities = capabilities,
   })
 else
-  vim.notify("vim-language-server not found!", 'warn', {title = 'Nvim-config'})
+  vim.notify("vim-language-server not found!", 'warn', { title = 'Nvim-config' })
 end
 
 -- set up bash-language-server
@@ -220,39 +221,39 @@ lspconfig.sumneko_lua.setup(luadev)
 
 --[[local sumneko_binary_path = vim.fn.exepath("lua-language-server")]]
 --[[if vim.g.is_mac or vim.g.is_linux and sumneko_binary_path ~= "" then]]
-  --[[local sumneko_root_path = vim.fn.fnamemodify(sumneko_binary_path, ":h:h:h")]]
+--[[local sumneko_root_path = vim.fn.fnamemodify(sumneko_binary_path, ":h:h:h")]]
 
-  --[[local runtime_path = vim.split(package.path, ";")]]
-  --[[table.insert(runtime_path, "lua/?.lua")]]
-  --[[table.insert(runtime_path, "lua/?/init.lua")]]
+--[[local runtime_path = vim.split(package.path, ";")]]
+--[[table.insert(runtime_path, "lua/?.lua")]]
+--[[table.insert(runtime_path, "lua/?/init.lua")]]
 
-  --[[lsumneko_luasumneko_luaspconfig.sumneko_lua.setup({]]
-    --[[on_attach = custom_attach,]]
-    --[[cmd = { sumneko_binary_path, "-E", sumneko_root_path .. "/main.lua" },]]
-    --[[settings = {]]
-      --[[Lua = {]]
-        --[[runtime = {]]
-          --[[-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)]]
-          --[[version = "LuaJIT",]]
-          --[[-- Setup your lua path]]
-          --[[path = runtime_path,]]
-        --[[},]]
-        --[[diagnostics = {]]
-          --[[-- Get the language server to recognize the `vim` global]]
-          --[[globals = { "vim" },]]
-        --[[},]]
-        --[[workspace = {]]
-          --[[-- Make the server aware of Neovim runtime files]]
-          --[[library = api.nvim_get_runtime_file("", true),]]
-        --[[},]]
-        --[[-- Do not send telemetry data containing a randomized but unique identifier]]
-        --[[telemetry = {]]
-          --[[enable = false,]]
-        --[[},]]
-      --[[},]]
-    --[[},]]
-    --[[capabilities = capabilities,]]
-  --[[})]]
+--[[lsumneko_luasumneko_luaspconfig.sumneko_lua.setup({]]
+--[[on_attach = custom_attach,]]
+--[[cmd = { sumneko_binary_path, "-E", sumneko_root_path .. "/main.lua" },]]
+--[[settings = {]]
+--[[Lua = {]]
+--[[runtime = {]]
+--[[-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)]]
+--[[version = "LuaJIT",]]
+--[[-- Setup your lua path]]
+--[[path = runtime_path,]]
+--[[},]]
+--[[diagnostics = {]]
+--[[-- Get the language server to recognize the `vim` global]]
+--[[globals = { "vim" },]]
+--[[},]]
+--[[workspace = {]]
+--[[-- Make the server aware of Neovim runtime files]]
+--[[library = api.nvim_get_runtime_file("", true),]]
+--[[},]]
+--[[-- Do not send telemetry data containing a randomized but unique identifier]]
+--[[telemetry = {]]
+--[[enable = false,]]
+--[[},]]
+--[[},]]
+--[[},]]
+--[[capabilities = capabilities,]]
+--[[})]]
 --[[end]]
 
 -- Change diagnostic signs.
@@ -279,8 +280,8 @@ vim.diagnostic.config({
 -- Change border of documentation hover window, See https://github.com/neovim/neovim/pull/13998.
 lsp.handlers["textDocument/hover"] = lsp.with(vim.lsp.handlers.hover, {
   --border = "rounded",
-    ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
-  ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
+  ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
+  ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
 
 })
 
@@ -318,4 +319,3 @@ local function goto_definition(split_cmd)
 end
 
 vim.lsp.handlers["textDocument/definition"] = goto_definition('split')
-
