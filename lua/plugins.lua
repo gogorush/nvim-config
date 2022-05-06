@@ -384,6 +384,9 @@ require("packer").startup({
       requires = { 'kyazdani42/nvim-web-devicons' },
       config = [[require('config.nvim-tree')]]
     }
+
+    -- glow: md file previewer
+    use {"ellisonleao/glow.nvim", branch = 'main'}
   end,
   config = {
     max_jobs = 16,

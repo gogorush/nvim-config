@@ -27,6 +27,11 @@ for s:fname in s:core_conf_files
   execute printf('source %s/core/%s', stdpath('config'), s:fname)
 endfor
 lua require('colorbuddy').colorscheme('cobalt2')
+highlight! link mkdLineBreak NONE
+
+" bufferline setting
+nnoremap <silent>b[ :BufferLineCycleNext<CR>
+nnoremap <silent>b] :BufferLineCyclePrev<CR>
 
 "set background=dark " or light if you want light mode
 "colorscheme gruvbox
