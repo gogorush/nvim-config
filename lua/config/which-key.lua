@@ -122,6 +122,10 @@ local mappings = {
     "<cmd>lua require('telescope').extensions.neoclip.default(require('telescope.themes').get_ivy())<cr>",
     "Clipboard Manager"
   },
+  ["z"] = {
+    "<cmd>lua require'telescope'.extensions.zoxide.list{}<cr>",
+    "zoxide finder"
+  },
 
   -- c = {
   --   name = "CMake",

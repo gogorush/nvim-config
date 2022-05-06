@@ -3,11 +3,29 @@ local lsp = vim.lsp
 
 local utils = require("utils")
 
+vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
+vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
+local border = {
+      {"🭽", "FloatBorder"},
+      {"▔", "FloatBorder"},
+      {"🭾", "FloatBorder"},
+      {"▕", "FloatBorder"},
+      {"🭿", "FloatBorder"},
+      {"▁", "FloatBorder"},
+      {"🭼", "FloatBorder"},
+      {"▏", "FloatBorder"},
+}
+
+-- LSP settings (for overriding per client)
+local handlers =  {
+}
+
 local custom_attach = function(client, bufnr)
   -- Mappings.
   local opts = { silent = true, buffer = bufnr }
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-  vim.keymap.set("n", "<C-]>", vim.lsp.buf.definition, opts)
+  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
   vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
   vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
@@ -70,194 +88,36 @@ local lspconfig = require("lspconfig")
 util = require "lspconfig/util"
 
 local on_attach = function(client)
+    -- Highlight symbol under cursor
+    if client.resolved_capabilities.document_highlight then
+      vim.cmd [[
+        hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
+        hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
+        hi! LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
+        augroup lsp_document_highlight
+          autocmd! * <buffer>
+          autocmd! CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+          autocmd! CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()
+          autocmd! CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+        augroup END
+      ]]
+    end
     require'completion'.on_attach(client)
 end
 
--- rust-tools
-local opts = {
-	tools = { -- rust-tools options
-		-- automatically set inlay hints (type hints)
-		-- There is an issue due to which the hints are not applied on the first
-		-- opened file. For now, write to the file to trigger a reapplication of
-		-- the hints or just run :RustSetInlayHints.
-		-- default: true
-		autoSetHints = true,
-
-		-- whether to show hover actions inside the hover window
-		-- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
-		-- default: true
-		hover_with_actions = true,
-
-		-- how to execute terminal commands
-		-- options right now: termopen / quickfix
-		executor = require("rust-tools/executors").termopen,
-
-		-- callback to execute once rust-analyzer is done initializing the workspace
-		-- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
-		on_initialized = nil,
-
-		-- These apply to the default RustSetInlayHints command
-		inlay_hints = {
-
-			-- Only show inlay hints for the current line
-			only_current_line = false,
-
-			-- Event which triggers a refersh of the inlay hints.
-			-- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
-			-- not that this may cause higher CPU usage.
-			-- This option is only respected when only_current_line and
-			-- autoSetHints both are true.
-			only_current_line_autocmd = "CursorHold",
-
-			-- whether to show parameter hints with the inlay hints or not
-			-- default: true
-			show_parameter_hints = true,
-
-			-- whether to show variable name before type hints with the inlay hints or not
-			-- default: false
-			show_variable_name = false,
-
-			-- prefix for parameter hints
-			-- default: "<-"
-			parameter_hints_prefix = "<- ",
-
-			-- prefix for all the other hints (type, chaining)
-			-- default: "=>"
-			other_hints_prefix = "=> ",
-
-			-- whether to align to the lenght of the longest line in the file
-			max_len_align = false,
-
-			-- padding from the left if max_len_align is true
-			max_len_align_padding = 1,
-
-			-- whether to align to the extreme right or not
-			right_align = false,
-
-			-- padding from the right if right_align is true
-			right_align_padding = 7,
-
-			-- The color of the hints
-			highlight = "Comment",
-		},
-
-
-		-- options same as lsp hover / vim.lsp.util.open_floating_preview()
-		hover_actions = {
-			-- the border that is used for the hover window
-			-- see vim.api.nvim_open_win()
-      border = {
-      {"🭽", "FloatBorder"},
-      {"▔", "FloatBorder"},
-      {"🭾", "FloatBorder"},
-      {"▕", "FloatBorder"},
-      {"🭿", "FloatBorder"},
-      {"▁", "FloatBorder"},
-      {"🭼", "FloatBorder"},
-      {"▏", "FloatBorder"},
-      },
-			-- whether the hover action window gets automatically focused
-			-- default: false
-			auto_focus = false,
-		},
-
-		-- settings for showing the crate graph based on graphviz and the dot
-		-- command
-		crate_graph = {
-			-- Backend used for displaying the graph
-			-- see: https://graphviz.org/docs/outputs/
-			-- default: x11
-			backend = "x11",
-			-- where to store the output, nil for no output stored (relative
-			-- path from pwd)
-			-- default: nil
-			output = nil,
-			-- true for all crates.io and external crates, false only the local
-			-- crates
-			-- default: true
-			full = true,
-
-			-- List of backends found on: https://graphviz.org/docs/outputs/
-			-- Is used for input validation and autocompletion
-			-- Last updated: 2021-08-26
-			enabled_graphviz_backends = {
-				"bmp",
-				"cgimage",
-				"canon",
-				"dot",
-				"gv",
-				"xdot",
-				"xdot1.2",
-				"xdot1.4",
-				"eps",
-				"exr",
-				"fig",
-				"gd",
-				"gd2",
-				"gif",
-				"gtk",
-				"ico",
-				"cmap",
-				"ismap",
-				"imap",
-				"cmapx",
-				"imap_np",
-				"cmapx_np",
-				"jpg",
-				"jpeg",
-				"jpe",
-				"jp2",
-				"json",
-				"json0",
-				"dot_json",
-				"xdot_json",
-				"pdf",
-				"pic",
-				"pct",
-				"pict",
-				"plain",
-				"plain-ext",
-				"png",
-				"pov",
-				"ps",
-				"ps2",
-				"psd",
-				"sgi",
-				"svg",
-				"svgz",
-				"tga",
-				"tiff",
-				"tif",
-				"tk",
-				"vml",
-				"vmlz",
-				"wbmp",
-				"webp",
-				"xlib",
-				"x11",
-			},
-		},
-	},
-
-	-- all the opts to send to nvim-lspconfig
-	-- these override the defaults set by rust-tools.nvim
-	-- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
-	server = {
-		-- standalone file support
-		-- setting it to false may improve startup time
-		standalone = true,
-	}, -- rust-analyer options
-
-	-- debugging stuff
-	dap = {
-		adapter = {
-			type = "executable",
-			command = "lldb-vscode",
-			name = "rt_lldb",
-		},
-	},
-}
-require('rust-tools').setup(opts)
+lspconfig.rust_analyzer.setup({
+  on_attach = custom_attach,
+  capabilities = capabilities,
+  filetypes = {'rust'},
+  cmd = {'rust-analyzer'},
+  settings = {
+  	["rust-analyzer"] = {
+  		checkOnSave = {
+  			command = "clippy"
+  			}
+  		}
+  	},
+})
 
  --gopls setting
 if utils.executable('gopls') then
@@ -417,5 +277,44 @@ vim.diagnostic.config({
 
 -- Change border of documentation hover window, See https://github.com/neovim/neovim/pull/13998.
 lsp.handlers["textDocument/hover"] = lsp.with(vim.lsp.handlers.hover, {
-  border = "rounded",
+  --border = "rounded",
+    ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
+  ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
+
 })
+
+-- Go-to definition in a split window
+local function goto_definition(split_cmd)
+  local util = vim.lsp.util
+  local log = require("vim.lsp.log")
+  local api = vim.api
+
+  -- note, this handler style is for neovim 0.5.1/0.6, if on 0.5, call with function(_, method, result)
+  local handler = function(_, result, ctx)
+    if result == nil or vim.tbl_isempty(result) then
+      local _ = log.info() and log.info(ctx.method, "No location found")
+      return nil
+    end
+
+    if split_cmd then
+      vim.cmd(split_cmd)
+    end
+
+    if vim.tbl_islist(result) then
+      util.jump_to_location(result[1])
+
+      if #result > 1 then
+        util.set_qflist(util.locations_to_items(result))
+        api.nvim_command("copen")
+        api.nvim_command("wincmd p")
+      end
+    else
+      util.jump_to_location(result)
+    end
+  end
+
+  return handler
+end
+
+vim.lsp.handlers["textDocument/definition"] = goto_definition('split')
+
