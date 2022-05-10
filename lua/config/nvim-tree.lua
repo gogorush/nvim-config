@@ -13,7 +13,16 @@ nvim_tree.setup({
   sort_by = "name",
   update_cwd = false,
   view = {
-    width = 30,
+    width = function()
+      local winwidth = vim.fn.winwidth(0)
+      if winwidth <= 100 then
+        return 30
+      elseif winwidth <= 200 then
+        return 40
+      else
+        return 50
+      end
+    end,
     height = 30,
     hide_root_folder = false,
     side = "left",

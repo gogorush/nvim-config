@@ -7,6 +7,7 @@ local packer_install_dir = vim.g.package_home .. "/opt/packer.nvim"
 local packer_repo = "https://github.com/wbthomason/packer.nvim"
 local install_cmd = string.format("10split |term git clone --depth=1 %s %s", packer_repo, packer_install_dir)
 
+vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 -- Auto-install packer in case it hasn't been installed.
 if fn.glob(packer_install_dir) == "" then
   vim.api.nvim_echo({ { "Installing packer.nvim", "Type" } }, true, {})
@@ -42,8 +43,12 @@ require("packer").startup({
     end
 
     -- nvim-lsp configuration (it relies on cmp-nvim-lsp, so it should be loaded after cmp-nvim-lsp).
-    use({ "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require('config.lsp')]] })
-    use { "williamboman/nvim-lsp-installer" }
+    -- use { "williamboman/nvim-lsp-installer" }
+    -- use({ "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require('config.lsp')]] })
+    use {
+      "williamboman/nvim-lsp-installer",
+      "neovim/nvim-lspconfig",
+    }
     use { 'folke/lua-dev.nvim' }
 
     -- use {"ray-x/go.nvim"}
@@ -52,7 +57,7 @@ require("packer").startup({
     -- use "RishabhRD/nvim-lsputils"
     use "kosayoda/nvim-lightbulb" -- code action
     use "ray-x/lsp_signature.nvim" -- show function signature when typing
-    use { "neoclide/coc.nvim", branch = "release" }
+    --use { "neoclide/coc.nvim", branch = "release" }
 
 
     if vim.g.is_mac then
@@ -108,14 +113,15 @@ require("packer").startup({
       requires = { { 'nvim-lua/plenary.nvim' } }
     }
     -- search emoji and other symbols
-    use { 'nvim-telescope/telescope-symbols.nvim', after = 'telescope.nvim' }
+    -- use { 'nvim-telescope/telescope-symbols.nvim', after = 'telescope.nvim' }
     use { 'nvim-telescope/telescope-project.nvim', after = 'telescope.nvim' }
     use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
     use "nvim-telescope/telescope-ui-select.nvim"
     use "nvim-telescope/telescope-live-grep-raw.nvim"
-    use "MattesGroeger/vim-bookmarks"
-    use "tom-anders/telescope-vim-bookmarks.nvim"
-    use "nvim-telescope/telescope-dap.nvim"
+    use { 'fcying/telescope-ctags-outline.nvim' }
+    -- use "MattesGroeger/vim-bookmarks"
+    -- use "tom-anders/telescope-vim-bookmarks.nvim"
+    -- use "nvim-telescope/telescope-dap.nvim"
 
 
     -- Another similar plugin is command-t
@@ -179,6 +185,11 @@ require("packer").startup({
       end
     })
 
+    use ({
+      'stevearc/aerial.nvim',
+      config = function() require('aerial').setup() end
+    })
+
     use { 'jvgrootveld/telescope-zoxide' }
     -- For Windows and Mac, we can open an URL in the browser. For Linux, it may
     -- not be possible since we maybe in a server which disables GUI.
@@ -202,11 +213,18 @@ require("packer").startup({
 
     -- Comment plugin
     use({ "tpope/vim-commentary", event = "VimEnter" })
+    use({
+      'numToStr/Comment.nvim',
+      config = function()
+        require('Comment').setup()
+      end
+    })
 
     -- Multiple cursor plugin like Sublime Text?
     -- use 'mg979/vim-visual-multi'
 
     -- Autosave files on certain events
+    -- NOTE: https://github.com/numToStr/Comment.nvim/blob/master/doc/API.md
     use({
       "Pocco81/AutoSave.nvim",
       event = "VimEnter",
@@ -228,7 +246,7 @@ require("packer").startup({
 
     -- Repeat vim motions
     use({ "tpope/vim-repeat", event = "VimEnter" })
-    use { 'ggandor/lightspeed.nvim', after = "vim-repeat" }
+    use({ "ggandor/lightspeed.nvim", after = "vim-repeat" })
 
     -- Show the content of register in preview window
     -- Plug 'junegunn/vim-peekaboo'

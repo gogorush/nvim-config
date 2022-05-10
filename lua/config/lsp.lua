@@ -5,7 +5,6 @@ local utils = require("utils")
 
 vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
 vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
-vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 
 local border = {
   { "🭽", "FloatBorder" },
@@ -30,11 +29,10 @@ local custom_attach = function(client, bufnr)
   vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
   vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-  vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
-  vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
-  vim.keymap.set("n", "<space>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
-  vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
-  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+  vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
+  vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
+  vim.keymap.set("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
   vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
   vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
   vim.keymap.set("n", "<space>q", function() vim.diagnostic.setqflist({ open = true }) end, opts)
@@ -142,29 +140,25 @@ else
   vim.notify("gopls not found!", 'warn', { title = 'Nvim-config' })
 end
 
-if utils.executable('pylsp') then
-  lspconfig.pylsp.setup({
-    on_attach = custom_attach,
-    settings = {
-      pylsp = {
-        plugins = {
-          pylint = { enabled = true, executable = "pylint" },
-          pyflakes = { enabled = false },
-          pycodestyle = { enabled = false },
-          jedi_completion = { fuzzy = true },
-          pyls_isort = { enabled = true },
-          pylsp_mypy = { enabled = true },
-        },
+lspconfig.pylsp.setup({
+  on_attach = custom_attach,
+  settings = {
+    pylsp = {
+      plugins = {
+        pylint = { enabled = true, executable = "pylint" },
+        pyflakes = { enabled = false },
+        pycodestyle = { enabled = false },
+        jedi_completion = { fuzzy = true },
+        pyls_isort = { enabled = true },
+        pylsp_mypy = { enabled = true },
       },
     },
-    flags = {
-      debounce_text_changes = 200,
-    },
-    capabilities = capabilities,
-  })
-else
-  vim.notify("pylsp not found!", 'warn', { title = 'Nvim-config' })
-end
+  },
+  flags = {
+    debounce_text_changes = 200,
+  },
+  capabilities = capabilities,
+})
 
 
 -- if utils.executable('pyright') then
@@ -318,4 +312,4 @@ local function goto_definition(split_cmd)
   return handler
 end
 
-vim.lsp.handlers["textDocument/definition"] = goto_definition('split')
+vim.lsp.handlers["textDocument/definition"] = goto_definition('vsplit')

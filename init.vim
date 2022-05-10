@@ -1,6 +1,6 @@
 " This is my personal Nvim configuration supporting Mac, Linux and Windows, with various plugins configured.
 " This configuration evolves as I learn more about Nvim and become more proficient in using Nvim.
-" Since it is very long (more than 1000 lines!), you should read it carefully and take only the settings that suit you.
+" Since pkt is very long (more than 1000 lines!), you should read it carefully and take only the settings that suit you.
 " I would not recommend cloning this repo and replace your own config. Good configurations are personal,
 " built over time with a lot of polish.
 "
@@ -12,7 +12,6 @@ call plug#begin()
 Plug 'preservim/nerdcommenter'
 Plug 'ellisonleao/gruvbox.nvim'
 call plug#end()
-
 
 let s:core_conf_files = [
       \ 'globals.vim',
@@ -28,14 +27,24 @@ for s:fname in s:core_conf_files
 endfor
 lua require('colorbuddy').colorscheme('cobalt2')
 highlight! link mkdLineBreak NONE
+let g:python3_host_prog = '/usr/local/bin/python3'
+
+" set to highlight NOTE: TODO:
+augroup vimrc_todo
+    au!
+    au Syntax * syn match MyTodo /\v<(HABA|FIXME|NOTE|TODO|OPTIMIZE|XXX)/
+          \ containedin=.*Comment,vimCommentTitle
+augroup END
+hi def link MyTodo Todo
 
 "set background=dark " or light if you want light mode
+
 "colorscheme gruvbox
 
 " coc nvim configuration
 " Set internal encoding of vim, not needed on neovim, since coc.nvim using some
 " unicode characters in the file autoload/float.vim
-" set encoding=utf-8
+"Uset encoding=utf-8
 " 
 " " TextEdit might fail if hidden is not set.
 " set hidden

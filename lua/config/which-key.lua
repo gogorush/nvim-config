@@ -80,40 +80,40 @@ local opts = {
 
 local mappings = {
   ["a"] = { "<cmd>Alpha<cr>", "Welcome" },
-  ["r"] = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
-  -- ["b"] = {
-  --   "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
-  --   "Buffers",
-  -- },
+   ["r"] = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
+   ["b"] = {
+     "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
+     "Buffers",
+   },
   -- ["e"] = { "<cmd>NvimTreeToggle<cr>", "Explorer" },
   -- ["w"] = { "<cmd>w!<CR>", "Save" },
   -- ["q"] = { "<cmd>q!<CR>", "Quit" },
-  -- ["/"] = { "<cmd>lua require('Comment').toggle()<CR>", "Comment" },
+  ["/"] = { "<cmd>lua require('Comment').toggle()<CR>", "Comment" },
   ["C"] = { "<cmd>%bd|e#<CR>", "Close Other Buffers" },
   -- ["h"] = { "<cmd>nohlsearch<CR>", "No Highlight" },
   ["f"] = {
-    "<cmd>lua require('telescope.builtin').find_files()<cr>",
+    "<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({previewer = false}))<cr>",
     -- "<cmd>lua require('telescope').extensions.frecenncy.frecency(require('telescope.themes').get_dropdown({ previewer = false }))<cr>",
     "Find files",
   },
   -- ["F"] = { "<cmd>Telescope live_grep theme=ivy<cr>", "Find Text" },
   ["F"] = { "<cmd>lua require('telescope').extensions.live_grep_raw.live_grep_raw(require('telescope.themes').get_ivy())<cr>", "Find Text" },
-  ["s"] = {
-    "<cmd>lua require('telescope.builtin').lsp_document_symbols()<cr>",
-    "Find Document Symbols",
-  },
-  ["S"] = {
-    "<cmd>lua require('telescope.builtin').lsp_dynamic_workspace_symbols()<cr>",
-    -- "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<cr>",
-    "Find Symobls",
-  },
-  ["p"] = { "<cmd>Telescope projects<cr>", "Projects" },
+  -- ["s"] = {
+  --   "<cmd>lua require('telescope.builtin').lsp_document_symbols()<cr>",
+  --   "Find Document Symbols",
+  -- },
+  -- ["S"] = {
+  --   "<cmd>lua require('telescope.builtin').lsp_dynamic_workspace_symbols()<cr>",
+  --   -- "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<cr>",
+  --   "Find Symobls",
+  -- },
+  -- ["p"] = { "<cmd>Telescope projects<cr>", "Projects" },
 
   ["P"] = { "<cmd>SessionManager load_session<cr>", "Projects" },
 
-  -- ["t"] = {
-  --   "<cmd>UltestSummary<CR>", "Unit Test"
-  -- },
+  ["t"] = {
+    "<cmd>lua require('telescope').extensions.ctags_outline.outline()<CR>", "ctags_outline"
+  },
 
   ["o"] = {
     "<cmd>AerialToggle<CR>", "Outline"

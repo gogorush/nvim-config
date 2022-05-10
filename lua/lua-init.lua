@@ -9,3 +9,7 @@ require 'config/lsp'
 require 'config/telescope'
 
 require 'config/nvim-web-devicons'
+
+require('Comment').setup()
+
+require 'config/lightspeed'
