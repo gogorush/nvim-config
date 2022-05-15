@@ -57,8 +57,9 @@ require("packer").startup({
     -- use "RishabhRD/nvim-lsputils"
     use "kosayoda/nvim-lightbulb" -- code action
     use "ray-x/lsp_signature.nvim" -- show function signature when typing
-    --use { "neoclide/coc.nvim", branch = "release" }
+    -- use { "neoclide/coc.nvim", branch = "release" }
 
+    use 'mfussenegger/nvim-jdtls'
 
     if vim.g.is_mac then
       use({ "nvim-treesitter/nvim-treesitter", event = 'BufEnter', run = ":TSUpdate", config = [[require('config.treesitter')]] })
@@ -185,7 +186,7 @@ require("packer").startup({
       end
     })
 
-    use ({
+    use({
       'stevearc/aerial.nvim',
       config = function() require('aerial').setup() end
     })

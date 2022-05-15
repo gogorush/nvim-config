@@ -122,6 +122,8 @@ nvim_tree.setup({
   },
 })
 
+vim.g.nvim_tree_group_empty = 1
+
 vim.keymap.set('n', '<C-n>', function()
   return require('nvim-tree').toggle(false, false)
 end,
