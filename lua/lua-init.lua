@@ -14,4 +14,6 @@ require 'config/lightspeed'
 
 require 'config/lsp'
 
+require 'config/null-ls'
+
 --require ('config/jdtls').setup()
