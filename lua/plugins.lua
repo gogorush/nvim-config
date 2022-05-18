@@ -7,7 +7,7 @@ local packer_install_dir = vim.g.package_home .. "/opt/packer.nvim"
 local packer_repo = "https://github.com/wbthomason/packer.nvim"
 local install_cmd = string.format("10split |term git clone --depth=1 %s %s", packer_repo, packer_install_dir)
 
-vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting()]]
+-- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting()]]
 -- Auto-install packer in case it hasn't been installed.
 if fn.glob(packer_install_dir) == "" then
   vim.api.nvim_echo({ { "Installing packer.nvim", "Type" } }, true, {})
