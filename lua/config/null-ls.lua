@@ -35,15 +35,13 @@ local no_really = {
 null_ls.register(no_really)
 
 local sources = {
-	formatting.prettier.with({
-		filetypes = { "go", "lua", "java", "rust", "json" },
-	}),
 	formatting.stylua,
+	formatting.gofmt,
 	formatting.goimports,
 	diagnostics.golangci_lint,
 	diagnostics.eslint,
 	diagnostics.jsonlint,
-	completion.spell,
+	-- completion.spell,
 }
 
 local async_formatting = function(bufnr)
@@ -76,24 +74,25 @@ local async_formatting = function(bufnr)
 		end
 	)
 end
+
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 null_ls.setup({
 	sources = sources,
 	-- you can reuse a shared lspconfig on_attach callback here
-	on_attach = function(client, bufnr)
-		if client.supports_method("textDocument/formatting") then
-			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				group = augroup,
-				buffer = bufnr,
-				callback = function()
-					async_formatting(bufnr)
-					-- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-					-- vim.lsp.buf.formatting_sync()
-					-- vim.lsp.buf.format({ bufnr })
-				end,
-			})
-		end
-	end,
+	-- on_attach = function(client, bufnr)
+	-- 	if client.supports_method("textDocument/formatting") then
+	-- 		vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+	-- 		vim.api.nvim_create_autocmd("BufWritePre", {
+	-- 			group = augroup,
+	-- 			buffer = bufnr,
+	-- 			callback = function()
+	-- 				async_formatting(bufnr)
+	-- 				-- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+	-- 				-- vim.lsp.buf.formatting_sync()
+	-- 				-- vim.lsp.buf.format({ bufnr = bufnr })
+	-- 			end,
+	-- 		})
+	-- 	end
+	-- end,
 })

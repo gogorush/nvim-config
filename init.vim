@@ -25,11 +25,10 @@ let s:core_conf_files = [
 for s:fname in s:core_conf_files
   execute printf('source %s/core/%s', stdpath('config'), s:fname)
 endfor
-lua require('colorbuddy').colorscheme('cobalt2')
 highlight! link mkdLineBreak NONE
 let g:python3_host_prog = '/usr/local/bin/python3'
-
 " set to highlight NOTE: TODO:
+
 augroup vimrc_todo
     au!
     au Syntax * syn match MyTodo /\v<(HABA|FIXME|NOTE|TODO|OPTIMIZE|XXX)/
@@ -38,6 +37,8 @@ augroup END
 hi def link MyTodo Todo
 
 nnoremap <C-l> <C-i>
+lua require('colorbuddy').colorscheme('cobalt2')
+
 
 " set background=dark " or light if you want light mode
 " colorscheme gruvbox

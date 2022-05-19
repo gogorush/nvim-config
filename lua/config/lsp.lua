@@ -3,67 +3,73 @@ local lsp = vim.lsp
 
 local utils = require("utils")
 
-vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
-vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
+vim.cmd([[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]])
+vim.cmd([[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]])
 
 local border = {
-  { "🭽", "FloatBorder" },
-  { "▔", "FloatBorder" },
-  { "🭾", "FloatBorder" },
-  { "▕", "FloatBorder" },
-  { "🭿", "FloatBorder" },
-  { "▁", "FloatBorder" },
-  { "🭼", "FloatBorder" },
-  { "▏", "FloatBorder" },
+	{ "🭽", "FloatBorder" },
+	{ "▔", "FloatBorder" },
+	{ "🭾", "FloatBorder" },
+	{ "▕", "FloatBorder" },
+	{ "🭿", "FloatBorder" },
+	{ "▁", "FloatBorder" },
+	{ "🭼", "FloatBorder" },
+	{ "▏", "FloatBorder" },
 }
 
 -- LSP settings (for overriding per client)
-local handlers = {
-}
+local handlers = {}
 
 local custom_attach = function(client, bufnr)
-  -- Mappings.
-  local opts = { silent = true, buffer = bufnr }
-  vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-  vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
-  vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
-  vim.keymap.set("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
-  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-  vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-  vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-  vim.keymap.set("n", "<space>q", function() vim.diagnostic.setqflist({ open = true }) end, opts)
-  vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
+	-- Mappings.
+	local opts = {
+		silent = true,
+		buffer = bufnr,
+	}
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+	vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
+	vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
+	vim.keymap.set("n", "<leader>wl", function()
+		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+	end, opts)
+	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+	vim.keymap.set("n", "<space>q", function()
+		vim.diagnostic.setqflist({ open = true })
+	end, opts)
+	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
 
-  vim.api.nvim_create_autocmd("CursorHold", {
-    buffer = bufnr,
-    callback = function()
-      local opts = {
-        focusable = false,
-        close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-        border = 'rounded',
-        source = 'always', -- show source in diagnostic popup window
-        prefix = ' '
-      }
-      vim.diagnostic.open_float(nil, opts)
-    end
-  })
+	vim.api.nvim_create_autocmd("CursorHold", {
+		buffer = bufnr,
+		callback = function()
+			local opts = {
+				focusable = false,
+				close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+				border = "rounded",
+				source = "always", -- show source in diagnostic popup window
+				prefix = " ",
+			}
+			vim.diagnostic.open_float(nil, opts)
+		end,
+	})
 
-  -- Set some key bindings conditional on server capabilities
-  if client.resolved_capabilities.document_formatting then
-    vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting, opts)
-  end
-  if client.resolved_capabilities.document_range_formatting then
-    vim.keymap.set("x", "<space>f", vim.lsp.buf.range_formatting, opts)
-  end
+	-- Set some key bindings conditional on server capabilities
+	if client.resolved_capabilities.document_formatting then
+		vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting, opts)
+	end
+	if client.resolved_capabilities.document_range_formatting then
+		vim.keymap.set("x", "<space>f", vim.lsp.buf.range_formatting, opts)
+	end
 
-  -- The blow command will highlight the current variable and its usages in the buffer.
-  if client.resolved_capabilities.document_highlight then
-    vim.cmd([[
+	-- The blow command will highlight the current variable and its usages in the buffer.
+	if client.resolved_capabilities.document_highlight then
+		vim.cmd([[
       hi! link LspReferenceRead Visual
       hi! link LspReferenceText Visual
       hi! link LspReferenceWrite Visual
@@ -73,25 +79,25 @@ local custom_attach = function(client, bufnr)
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
     ]])
-  end
+	end
 
-  if vim.g.logging_level == 'debug' then
-    local msg = string.format("Language server %s started!", client.name)
-    vim.notify(msg, 'info', { title = 'Nvim-config' })
-  end
+	if vim.g.logging_level == "debug" then
+		local msg = string.format("Language server %s started!", client.name)
+		vim.notify(msg, "info", { title = "Nvim-config" })
+	end
 end
 
 local capabilities = lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local lspconfig = require("lspconfig")
-util = require "lspconfig/util"
+util = require("lspconfig/util")
 
 local on_attach = function(client)
-  -- Highlight symbol under cursor
-  if client.resolved_capabilities.document_highlight then
-    vim.cmd [[
+	-- Highlight symbol under cursor
+	if client.resolved_capabilities.document_highlight then
+		vim.cmd([[
         hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
         hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
         hi! LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
@@ -101,66 +107,65 @@ local on_attach = function(client)
           autocmd! CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()
           autocmd! CursorMoved <buffer> lua vim.lsp.buf.clear_references()
         augroup END
-      ]]
-  end
-  require 'completion'.on_attach(client)
+      ]])
+	end
+	require("completion").on_attach(client)
 end
 
 lspconfig.rust_analyzer.setup({
-  on_attach = custom_attach,
-  capabilities = capabilities,
-  filetypes = { 'rust' },
-  cmd = { 'rust-analyzer' },
-  settings = {
-    ["rust-analyzer"] = {
-      checkOnSave = {
-        command = "clippy"
-      }
-    }
-  },
+	on_attach = custom_attach,
+	capabilities = capabilities,
+	filetypes = { "rust" },
+	cmd = { "rust-analyzer" },
+	settings = {
+		["rust-analyzer"] = {
+			checkOnSave = {
+				command = "clippy",
+			},
+		},
+	},
 })
 
 --gopls setting
-if utils.executable('gopls') then
-  lspconfig.gopls.setup({
-    on_attach = custom_attach,
-    capabilities = capabilities,
-    cmd = { "gopls", "serve" },
-    filetypes = { "go", "gomod" },
-    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-    settings = {
-      gopls = {
-        analyses = {
-          unusedparams = true,
-        },
-        staticcheck = true,
-      },
-    },
-  })
+if utils.executable("gopls") then
+	lspconfig.gopls.setup({
+		on_attach = custom_attach,
+		capabilities = capabilities,
+		cmd = { "gopls", "serve" },
+		filetypes = { "go", "gomod" },
+		root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+		settings = {
+			gopls = {
+				analyses = {
+					unusedparams = true,
+				},
+				staticcheck = true,
+			},
+		},
+	})
 else
-  vim.notify("gopls not found!", 'warn', { title = 'Nvim-config' })
+	vim.notify("gopls not found!", "warn", { title = "Nvim-config" })
 end
 
 lspconfig.pylsp.setup({
-  on_attach = custom_attach,
-  settings = {
-    pylsp = {
-      plugins = {
-        pylint = { enabled = true, executable = "pylint" },
-        pyflakes = { enabled = false },
-        pycodestyle = { enabled = false },
-        jedi_completion = { fuzzy = true },
-        pyls_isort = { enabled = true },
-        pylsp_mypy = { enabled = true },
-      },
-    },
-  },
-  flags = {
-    debounce_text_changes = 200,
-  },
-  capabilities = capabilities,
+	on_attach = custom_attach,
+	settings = {
+		pylsp = {
+			plugins = {
+				pylint = { enabled = true, executable = "pylint" },
+				pyflakes = { enabled = false },
+				pycodestyle = { enabled = false },
+				jedi_completion = { fuzzy = true },
+				pyls_isort = { enabled = true },
+				pylsp_mypy = { enabled = true },
+			},
+		},
+	},
+	flags = {
+		debounce_text_changes = 200,
+	},
+	capabilities = capabilities,
 })
-
 
 -- if utils.executable('pyright') then
 --   lspconfig.pyright.setup{
@@ -171,48 +176,47 @@ lspconfig.pylsp.setup({
 --   vim.notify("pyright not found!", 'warn', {title = 'Nvim-config'})
 -- end
 
-if utils.executable('clangd') then
-  lspconfig.clangd.setup({
-    on_attach = custom_attach,
-    capabilities = capabilities,
-    filetypes = { "c", "cpp", "cc" },
-    flags = {
-      debounce_text_changes = 500,
-    },
-  })
+if utils.executable("clangd") then
+	lspconfig.clangd.setup({
+		on_attach = custom_attach,
+		capabilities = capabilities,
+		filetypes = { "c", "cpp", "cc" },
+		flags = {
+			debounce_text_changes = 500,
+		},
+	})
 else
-  vim.notify("clangd not found!", 'warn', { title = 'Nvim-config' })
+	vim.notify("clangd not found!", "warn", { title = "Nvim-config" })
 end
 
 -- set up vim-language-server
-if utils.executable('vim-language-server') then
-  lspconfig.vimls.setup({
-    on_attach = custom_attach,
-    flags = {
-      debounce_text_changes = 500,
-    },
-    capabilities = capabilities,
-  })
+if utils.executable("vim-language-server") then
+	lspconfig.vimls.setup({
+		on_attach = custom_attach,
+		flags = {
+			debounce_text_changes = 500,
+		},
+		capabilities = capabilities,
+	})
 else
-  vim.notify("vim-language-server not found!", 'warn', { title = 'Nvim-config' })
+	vim.notify("vim-language-server not found!", "warn", { title = "Nvim-config" })
 end
 
 -- set up bash-language-server
-if utils.executable('bash-language-server') then
-  lspconfig.bashls.setup({
-    on_attach = custom_attach,
-    capabilities = capabilities,
-  })
+if utils.executable("bash-language-server") then
+	lspconfig.bashls.setup({
+		on_attach = custom_attach,
+		capabilities = capabilities,
+	})
 end
 
 local luadev = require("lua-dev").setup({
-  -- add any options here, or leave empty to use the default settings
-  -- lspconfig = {
-  --   cmd = {"lua-language-server"}
-  -- },
+	-- add any options here, or leave empty to use the default settings
+	-- lspconfig = {
+	--   cmd = {"lua-language-server"}
+	-- },
 })
 lspconfig.sumneko_lua.setup(luadev)
-
 
 --[[local sumneko_binary_path = vim.fn.exepath("lua-language-server")]]
 --[[if vim.g.is_mac or vim.g.is_linux and sumneko_binary_path ~= "" then]]
@@ -259,10 +263,10 @@ vim.fn.sign_define("DiagnosticSignHint", { text = "", texthl = "DiagnosticSig
 
 -- global config for diagnostic
 vim.diagnostic.config({
-  underline = false,
-  virtual_text = false,
-  signs = true,
-  severity_sort = true,
+	underline = false,
+	virtual_text = false,
+	signs = true,
+	severity_sort = true,
 })
 
 -- lsp.handlers["textDocument/publishDiagnostics"] = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
@@ -274,43 +278,42 @@ vim.diagnostic.config({
 
 -- Change border of documentation hover window, See https://github.com/neovim/neovim/pull/13998.
 lsp.handlers["textDocument/hover"] = lsp.with(vim.lsp.handlers.hover, {
-  --border = "rounded",
-  ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
-  ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
-
+	--border = "rounded",
+	["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
+	["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
 })
 
 -- Go-to definition in a split window
 local function goto_definition(split_cmd)
-  local util = vim.lsp.util
-  local log = require("vim.lsp.log")
-  local api = vim.api
+	local util = vim.lsp.util
+	local log = require("vim.lsp.log")
+	local api = vim.api
 
-  -- note, this handler style is for neovim 0.5.1/0.6, if on 0.5, call with function(_, method, result)
-  local handler = function(_, result, ctx)
-    if result == nil or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(ctx.method, "No location found")
-      return nil
-    end
+	-- note, this handler style is for neovim 0.5.1/0.6, if on 0.5, call with function(_, method, result)
+	local handler = function(_, result, ctx)
+		if result == nil or vim.tbl_isempty(result) then
+			local _ = log.info() and log.info(ctx.method, "No location found")
+			return nil
+		end
 
-    if split_cmd then
-      vim.cmd(split_cmd)
-    end
+		if split_cmd then
+			vim.cmd(split_cmd)
+		end
 
-    if vim.tbl_islist(result) then
-      util.jump_to_location(result[1])
+		if vim.tbl_islist(result) then
+			util.jump_to_location(result[1])
 
-      if #result > 1 then
-        util.set_qflist(util.locations_to_items(result))
-        api.nvim_command("copen")
-        api.nvim_command("wincmd p")
-      end
-    else
-      util.jump_to_location(result)
-    end
-  end
+			if #result > 1 then
+				util.set_qflist(util.locations_to_items(result))
+				api.nvim_command("copen")
+				api.nvim_command("wincmd p")
+			end
+		else
+			util.jump_to_location(result)
+		end
+	end
 
-  return handler
+	return handler
 end
 
-vim.lsp.handlers["textDocument/definition"] = goto_definition('vsplit')
+vim.lsp.handlers["textDocument/definition"] = goto_definition("vsplit")

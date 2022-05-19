@@ -1,19 +1,18 @@
 -- Some utility stuff
-require 'utils'
+require("utils")
 
 -- plugin installation
-require 'plugins'
+require("plugins")
 
-require 'config/telescope'
+require("config/telescope")
 
-require 'config/nvim-web-devicons'
+require("config/nvim-web-devicons")
 
-require('Comment').setup()
+require("Comment").setup()
 
-require 'config/lightspeed'
+require("config/lightspeed")
 
-require 'config/lsp'
+require("config/lsp")
 
-require 'config/null-ls'
+require("config/null-ls")
 
---require ('config/jdtls').setup()
