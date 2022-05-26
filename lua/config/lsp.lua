@@ -59,14 +59,6 @@ local custom_attach = function(client, bufnr)
 		end,
 	})
 
-	-- Set some key bindings conditional on server capabilities
-	if client.resolved_capabilities.document_formatting then
-		vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting, opts)
-	end
-	if client.resolved_capabilities.document_range_formatting then
-		vim.keymap.set("x", "<space>f", vim.lsp.buf.range_formatting, opts)
-	end
-
 	-- The blow command will highlight the current variable and its usages in the buffer.
 	if client.resolved_capabilities.document_highlight then
 		vim.cmd([[
@@ -84,6 +76,40 @@ local custom_attach = function(client, bufnr)
 	if vim.g.logging_level == "debug" then
 		local msg = string.format("Language server %s started!", client.name)
 		vim.notify(msg, "info", { title = "Nvim-config" })
+	end
+
+	local lsp_formatting = function(bufnr)
+		vim.lsp.buf.format({
+			filter = function(clients)
+				-- filter out clients that you don't want to use
+				return vim.tbl_filter(function(client)
+					-- return client.name ~= "tsserver"
+					return client.name == "null-ls"
+				end, clients)
+			end,
+			bufnr = bufnr,
+		})
+	end
+
+	-- if you want to set up formatting on save, you can use this as a callback
+	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+	if client.supports_method("textDocument/formatting") then
+		vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			group = augroup,
+			buffer = bufnr,
+			callback = function()
+				lsp_formatting(bufnr)
+			end,
+		})
+	end
+	-- Set some key bindings conditional on server capabilities
+	if client.resolved_capabilities.document_formatting then
+		vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting, opts)
+	end
+	if client.resolved_capabilities.document_range_formatting then
+		vim.keymap.set("x", "<space>f", vim.lsp.buf.range_formatting, opts)
 	end
 end
 
@@ -210,13 +236,13 @@ if utils.executable("bash-language-server") then
 	})
 end
 
-local luadev = require("lua-dev").setup({
-	-- add any options here, or leave empty to use the default settings
-	-- lspconfig = {
-	--   cmd = {"lua-language-server"}
-	-- },
-})
-lspconfig.sumneko_lua.setup(luadev)
+-- local luadev = require("lua-dev").setup({
+-- 	-- add any options here, or leave empty to use the default settings
+-- 	-- lspconfig = {
+-- 	--   cmd = {"lua-language-server"}
+-- 	-- },
+-- })
+-- lspconfig.sumneko_lua.setup(luadev)
 
 --[[local sumneko_binary_path = vim.fn.exepath("lua-language-server")]]
 --[[if vim.g.is_mac or vim.g.is_linux and sumneko_binary_path ~= "" then]]

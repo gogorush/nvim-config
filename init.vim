@@ -39,6 +39,11 @@ hi def link MyTodo Todo
 nnoremap <C-l> <C-i>
 lua require('colorbuddy').colorscheme('cobalt2')
 
+" imap <silent> <unique> <leader>j <Plug>JiraComplete
+" let g:jiracomplete_url = 'https://10.241.11.217:28443/'
+" let g:jiracomplete_username = 'vim'
+" let g:jiracomplete_password = 'R5T5W6J2ZN7IZPTHDC3U6XF7ZMPM223X2WEEHXDVBKBHC3UVSJXQAVSG7VXYRG5NBA65LBGYQLVMP5VW7HH575ZH3BNZL4C5SKDMW6W2LEFMQWPEQ3LPX6RJ3AFAKRIB'  " optional
+
 
 " set background=dark " or light if you want light mode
 " colorscheme gruvbox
