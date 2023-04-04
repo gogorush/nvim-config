@@ -10,7 +10,6 @@
 " plug manager settings
 call plug#begin()
 Plug 'preservim/nerdcommenter'
-Plug 'ellisonleao/gruvbox.nvim'
 call plug#end()
 
 let s:core_conf_files = [
@@ -19,15 +18,16 @@ let s:core_conf_files = [
       \ 'autocommands.vim',
       \ 'mappings.vim',
       \ 'plugins.vim',
-      \ 'themes.vim'
       \ ]
 
+      ""\ 'themes.vim'
 for s:fname in s:core_conf_files
   execute printf('source %s/core/%s', stdpath('config'), s:fname)
 endfor
 lua require('colorbuddy').colorscheme('cobalt2')
+
 highlight! link mkdLineBreak NONE
-let g:python3_host_prog = '/usr/local/bin/python3'
+let g:python3_host_prog ='/Users/hou/.pyenv/shims/python3'
 
 " set to highlight NOTE: TODO:
 augroup vimrc_todo
@@ -36,7 +36,7 @@ augroup vimrc_todo
           \ containedin=.*Comment,vimCommentTitle
 augroup END
 hi def link MyTodo Todo
-
+nnoremap <C-l> <C-i>
 "set background=dark " or light if you want light mode
 
 "colorscheme gruvbox

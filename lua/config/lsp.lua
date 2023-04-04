@@ -53,15 +53,15 @@ local custom_attach = function(client, bufnr)
   })
 
   -- Set some key bindings conditional on server capabilities
-  if client.resolved_capabilities.document_formatting then
-    vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting_sync, opts)
+  if client.server_capabilities.documentFormattingProvider then
+    vim.keymap.set("n", "<space>f", vim.lsp.buf.format, opts)
   end
-  if client.resolved_capabilities.document_range_formatting then
+  if client.server_capabilities.documentRangeFormattingProvider then
     vim.keymap.set("x", "<space>f", vim.lsp.buf.range_formatting, opts)
   end
 
   -- The blow command will highlight the current variable and its usages in the buffer.
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.documentHighlightProvider then
     vim.cmd([[
       hi! link LspReferenceRead Visual
       hi! link LspReferenceText Visual
@@ -81,7 +81,7 @@ local custom_attach = function(client, bufnr)
 end
 
 local capabilities = lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local lspconfig = require("lspconfig")
@@ -89,7 +89,7 @@ util = require "lspconfig/util"
 
 local on_attach = function(client)
   -- Highlight symbol under cursor
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.documentHighlightProvider then
     vim.cmd [[
         hi! LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
         hi! LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
@@ -102,7 +102,6 @@ local on_attach = function(client)
         augroup END
       ]]
   end
-  require 'completion'.on_attach(client)
 end
 
 lspconfig.rust_analyzer.setup({
@@ -160,6 +159,26 @@ lspconfig.pylsp.setup({
   capabilities = capabilities,
 })
 
+lspconfig.yamlls.setup({
+  on_attach = custom_attach,
+  capabilities = capabilities,
+  settings = {
+    yaml = {
+      schemas = {
+                ["https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/jsonschema/kedro-catalog-0.17.json"]= "conf/**/*catalog*",
+                ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*"
+            },
+      keyOrdering = false
+    },
+  },
+  filetypes = {"yaml", "yml"}
+})
+
+lspconfig.tsserver.setup({
+  on_attach = custom_attach,
+  capabilities = capabilities,
+  filetypes = {"javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"}
+})
 
 -- if utils.executable('pyright') then
 --   lspconfig.pyright.setup{
@@ -204,13 +223,31 @@ if utils.executable('bash-language-server') then
   })
 end
 
-local luadev = require("lua-dev").setup({
-  -- add any options here, or leave empty to use the default settings
-  -- lspconfig = {
-  --   cmd = {"lua-language-server"}
-  -- },
+
+local lsp_flags = {
+  debounce_text_changes = 100,
+}
+lspconfig.lua_ls.setup({
+   on_attach = on_attach,
+  flags = lsp_flags,
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        globals = {"vim", "packer_bootstrap"},
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
 })
-lspconfig.sumneko_lua.setup(luadev)
 
 
 --[[local sumneko_binary_path = vim.fn.exepath("lua-language-server")]]

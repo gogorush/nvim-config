@@ -7,7 +7,7 @@ local packer_install_dir = vim.g.package_home .. "/opt/packer.nvim"
 local packer_repo = "https://github.com/wbthomason/packer.nvim"
 local install_cmd = string.format("10split |term git clone --depth=1 %s %s", packer_repo, packer_install_dir)
 
-vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
+vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.format()]]
 -- Auto-install packer in case it hasn't been installed.
 if fn.glob(packer_install_dir) == "" then
   vim.api.nvim_echo({ { "Installing packer.nvim", "Type" } }, true, {})
@@ -43,25 +43,33 @@ require("packer").startup({
     end
 
     -- nvim-lsp configuration (it relies on cmp-nvim-lsp, so it should be loaded after cmp-nvim-lsp).
-    -- use { "williamboman/nvim-lsp-installer" }
     -- use({ "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require('config.lsp')]] })
     use {
-      "williamboman/nvim-lsp-installer",
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
       "neovim/nvim-lspconfig",
     }
-    use { 'folke/lua-dev.nvim' }
+
+    use { 'folke/neodev.nvim' }
 
     -- use {"ray-x/go.nvim"}
     -- use "jose-elias-alvarez/null-ls.nvim" -- for formatters and linters
     -- use "RishabhRD/popfix"
     -- use "RishabhRD/nvim-lsputils"
-    use "kosayoda/nvim-lightbulb" -- code action
+    use "kosayoda/nvim-lightbulb"  -- code action
     use "ray-x/lsp_signature.nvim" -- show function signature when typing
     --use { "neoclide/coc.nvim", branch = "release" }
+    -- java lsp
+    use 'mfussenegger/nvim-jdtls'
 
 
     if vim.g.is_mac then
-      use({ "nvim-treesitter/nvim-treesitter", event = 'BufEnter', run = ":TSUpdate", config = [[require('config.treesitter')]] })
+      use({
+        "nvim-treesitter/nvim-treesitter",
+        event = 'BufEnter',
+        run = ":TSUpdate",
+        config = [[require('config.treesitter')]]
+      })
     end
 
     -- Python indent (follows the PEP8 style)
@@ -109,15 +117,20 @@ require("packer").startup({
     end
 
     use {
-      'nvim-telescope/telescope.nvim', cmd = 'Telescope',
-      requires = { { 'nvim-lua/plenary.nvim' } }
+      'nvim-telescope/telescope.nvim', tag = '0.1.1',
+      requires = {
+        { 'nvim-lua/plenary.nvim' },
+        { "nvim-telescope/telescope-live-grep-args.nvim" },
+        config = function()
+          require("telescope").load_extension("live_grep_args")
+        end
+      }
     }
     -- search emoji and other symbols
     -- use { 'nvim-telescope/telescope-symbols.nvim', after = 'telescope.nvim' }
     use { 'nvim-telescope/telescope-project.nvim', after = 'telescope.nvim' }
     use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
     use "nvim-telescope/telescope-ui-select.nvim"
-    use "nvim-telescope/telescope-live-grep-raw.nvim"
     use { 'fcying/telescope-ctags-outline.nvim' }
     -- use "MattesGroeger/vim-bookmarks"
     -- use "tom-anders/telescope-vim-bookmarks.nvim"
@@ -185,7 +198,7 @@ require("packer").startup({
       end
     })
 
-    use ({
+    use({
       'stevearc/aerial.nvim',
       config = function() require('aerial').setup() end
     })
@@ -225,15 +238,30 @@ require("packer").startup({
 
     -- Autosave files on certain events
     -- NOTE: https://github.com/numToStr/Comment.nvim/blob/master/doc/API.md
-    use({
-      "Pocco81/AutoSave.nvim",
-      event = "VimEnter",
-      config = function()
-        vim.defer_fn(function() require('config.autosave') end, 1500)
-      end
-    })
-
     -- Show undo history visually
+
+    --[[use({]]
+    --[["Pocco81/auto-save.nvim",]]
+    --[[config = function()]]
+    --[[require("auto-save").setup {]]
+    --[[enabled = true,]]
+    --[[execution_message = "Autosaved at " .. vim.fn.strftime("%H:%M:%S"),]]
+    --[[events = { "InsertLeave", "TextChanged" },]]
+    --[[conditions = {]]
+    --[[exists = true,]]
+    --[[filename_is_not = { "plugins.lua" },]]
+    --[[filetype_is_not = {},]]
+    --[[modifiable = true,]]
+    --[[},]]
+    --[[write_all_buffers = false,]]
+    --[[on_off_commands = true,]]
+    --[[clean_command_line_interval = 1000,]]
+    --[[debounce_delay = 135,]]
+    --[[-- your config goes here]]
+    --[[-- or just leave it empty :)]]
+    --[[}]]
+    --[[end,]]
+    --[[})]]
     use({ "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } })
 
     -- Manage your yank history
@@ -376,7 +404,8 @@ require("packer").startup({
     end
 
     -- Session management plugin
-    use({ "tpope/vim-obsession", cmd = 'Obsession' })
+    use({ "tpope/vim-obession", cmd = 'Obsession' })
+    use({ "Shatur/neovim-session-manager" })
 
     if vim.g.is_linux then
       use({ "ojroques/vim-oscyank", cmd = { 'OSCYank', 'OSCYankReg' } })
