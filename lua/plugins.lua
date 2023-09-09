@@ -72,6 +72,8 @@ require("packer").startup({
       })
     end
 
+    use({ "NomicFoundation/hardhat-vscode" })
+
     -- Python indent (follows the PEP8 style)
     use({ "Vimjas/vim-python-pep8-indent", ft = { "python" } })
 

@@ -37,6 +37,10 @@ augroup vimrc_todo
 augroup END
 hi def link MyTodo Todo
 nnoremap <C-l> <C-i>
+
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+
 "set background=dark " or light if you want light mode
 
 "colorscheme gruvbox

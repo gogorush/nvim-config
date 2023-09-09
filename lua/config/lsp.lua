@@ -104,6 +104,16 @@ local on_attach = function(client)
   end
 end
 
+lspconfig.solidity.setup({
+  default_config = {
+    cmd = {'nomicfoundation-solidity-language-server', '--stdio'},
+    filetypes = { 'solidity' },
+    root_dir = lspconfig.util.find_git_ancestor,
+    single_file_support = true,
+  },
+})
+
+
 lspconfig.rust_analyzer.setup({
   on_attach = custom_attach,
   capabilities = capabilities,
@@ -117,6 +127,7 @@ lspconfig.rust_analyzer.setup({
     }
   },
 })
+
 
 --gopls setting
 if utils.executable('gopls') then
