@@ -251,8 +251,8 @@ if g:is_mac
   augroup grammarous_map
     autocmd!
     autocmd FileType markdown nmap <buffer> <leader>x <Plug>(grammarous-close-info-window)
-    autocmd FileType markdown nmap <buffer> <c-n> <Plug>(grammarous-move-to-next-error)
-    autocmd FileType markdown nmap <buffer> <c-p> <Plug>(grammarous-move-to-previous-error)
+    "autocmd FileType markdown nmap <buffer> <c-n> <Plug>(grammarous-move-to-next-error)
+    "autocmd FileType markdown nmap <buffer> <c-p> <Plug>(grammarous-move-to-previous-error)
   augroup END
 endif
 

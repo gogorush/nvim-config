@@ -119,14 +119,14 @@ require("packer").startup({
     end
 
     use {
-      'nvim-telescope/telescope.nvim', tag = '0.1.1',
+      'nvim-telescope/telescope.nvim', tag = '0.1.5',
       requires = {
-        { 'nvim-lua/plenary.nvim' },
         { "nvim-telescope/telescope-live-grep-args.nvim" },
-        config = function()
-          require("telescope").load_extension("live_grep_args")
-        end
-      }
+        { 'nvim-lua/plenary.nvim' }
+      },
+      config = function()
+        require("telescope").load_extension("live_grep_args")
+      end
     }
     -- search emoji and other symbols
     -- use { 'nvim-telescope/telescope-symbols.nvim', after = 'telescope.nvim' }
@@ -183,9 +183,7 @@ require("packer").startup({
     use { 'goolord/alpha-nvim', event = 'VimEnter', config = [[require('config.alpha-nvim')]] }
 
     use({
-      "lukas-reineke/indent-blankline.nvim",
-      event = 'VimEnter',
-      config = [[require('config.indent-blankline')]]
+      "lukas-reineke/indent-blankline.nvim"
     })
 
     -- Highlight URLs inside vim
@@ -406,7 +404,7 @@ require("packer").startup({
     end
 
     -- Session management plugin
-    use({ "tpope/vim-obession", cmd = 'Obsession' })
+    --use({ "tpope/vim-obession", cmd = 'Obsession' })
     use({ "Shatur/neovim-session-manager" })
 
     if vim.g.is_linux then
@@ -456,6 +454,7 @@ require("packer").startup({
     compile_path = util.join_paths(vim.fn.stdpath('config'), 'lua', 'packer_compiled.lua'),
   },
 })
+
 
 local status, _ = pcall(require, 'packer_compiled')
 if not status then

@@ -8,8 +8,15 @@
 " Email: jdhao@hotmail.com
 " Blog: https://jdhao.github.io/
 " plug manager settings
+if exists('g:vscode')
+    " VSCode extension
+else
+    " ordinary Neovim
+endif
 call plug#begin()
 Plug 'preservim/nerdcommenter'
+Plug 'henrik/vim-qargs'
+Plug 'henrik/git-grep-vim'
 call plug#end()
 
 let s:core_conf_files = [

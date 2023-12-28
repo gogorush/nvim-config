@@ -6,9 +6,6 @@ nvim_tree.setup({
   hijack_cursor = false,
   hijack_netrw = true,
   hijack_unnamed_buffer_when_opening = false,
-  ignore_buffer_on_setup = false,
-  open_on_setup = false,
-  open_on_setup_file = false,
   open_on_tab = false,
   sort_by = "name",
   update_cwd = false,
@@ -23,18 +20,11 @@ nvim_tree.setup({
         return 50
       end
     end,
-    hide_root_folder = false,
     side = "left",
     preserve_window_proportions = false,
     number = false,
     relativenumber = false,
     signcolumn = "yes",
-    mappings = {
-      custom_only = false,
-      list = {
-        -- user mappings go here
-      },
-    },
   },
   renderer = {
     indent_markers = {
@@ -58,7 +48,6 @@ nvim_tree.setup({
     update_cwd = false,
     ignore_list = {},
   },
-  ignore_ft_on_setup = {},
   system_open = {
     cmd = "",
     args = {},
@@ -121,7 +110,4 @@ nvim_tree.setup({
   },
 })
 
-vim.keymap.set('n', '<C-n>', function()
-  return require('nvim-tree').toggle(false, false)
-end,
-{ noremap = true, silent = true, desc = "toggle nvim-tree"})
+vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>')
